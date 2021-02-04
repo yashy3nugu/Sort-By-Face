@@ -41,14 +41,26 @@ def load_and_align(filepath,detector="HOG"):
     rectangles = face_detector(gray_img,2)
 
 
-    for rectangle in rectangles:
+    if len(rectangles)==1:
+        # (x,y,height,width) = rect_to_bb(rectangle)
+        aligned_face = face_aligner.align(input_image,gray_img,rectangles[0])
 
-        (x,y,height,width) = rect_to_bb(rectangle)
-        aligned_face = face_aligner.align(input_image,gray_img,rectangle)
+        return np.expand_dims(aligned_face,axis=0)
+    
+    # If multiple faces are found then return a batch of images
+    elif len(rectangles)>0:
 
-    # Todo - Add blur filtering and other methods for image processing
+        aligned_faces = []
+        for rectangle in rectangles:
 
-    return aligned_face
+            # (x,y,height,width) = rect_to_bb(rectangle)
+            aligned_face = face_aligner.align(input_image,gray_img,rectangle)
+            aligned_faces.append(aligned_face)
         
+        return np.array(aligned_faces)
 
+        # Todo - Add blur filtering and other methods for image processing
+
+    else:
+        return None
     
