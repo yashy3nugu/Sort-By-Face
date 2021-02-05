@@ -134,3 +134,7 @@ testing-images
 
 # Weights
 Weights/
+
+# Embeddings and temporary files
+*.pickle
+temp/
