@@ -1,12 +1,14 @@
-import multiprocessing
 import cv2
 import numpy as np
 import os
 import pickle
+import argparse
+import sys
+import shutil
+from multiprocessing import Pool, cpu_count
 from math import ceil
 from keras_facenet import FaceNet
 from aligner import load_and_align
-import shutil
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 # Prevent tensorflow from logging INFO logs
@@ -55,12 +57,36 @@ def compute_embedding(pool_data, detector="HOG"):
         pickle.dump(output, f)
 
 
-def main():
-    image_paths = get_image_paths("testing-images/test-data")
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "-src","--source", required=True, help="Path of the root directory where images are stored")
+    
+    parser.add_argument(
+        "--processes", required=False, type=int, default=cpu_count(),help="Number of cores to be used to compute embeddings"
+    )
+
+    parser.add_argument(
+        "--detector", required=False, default="HOG",choices=["HOG","CNN"], help="Type of frontal face detector to be used"
+    )
+
+    args = vars(parser.parse_args())
+
+    image_paths = get_image_paths(args['source'])
+
+    print("Found {} images..".format(len(image_paths)))
 
     # Define the number of processes to be used by the pool
     # Each process takes one core in the CPU
-    PROCESSES = 6
+    PROCESSES = args["processes"]
+
+    if PROCESSES > cpu_count():
+        print("Number of processes greater than system capacity..")
+        print("Defaulting to {} parallel processes".format(cpu_count()))
+        PROCESSES = cpu_count()
+    
     IMGS_PER_PROCESS = ceil(len(image_paths)/PROCESSES)
 
     # Split the images into equal sized batches for each process
@@ -74,7 +100,9 @@ def main():
 
     # Each process saves the embeddings computed by it into a pickle file in a temporary folder.
     # The temporary pickle files can then be loaded and we can generate a single pickle file containing all the embeddings for our data
-    os.mkdir("temp")
+    if not os.path.exists("temp"):
+        os.mkdir("temp")
+
     split_data = []
     for pool_id, batch in enumerate(split_paths):
         temp_path = os.path.join("temp", "pool_{}.pickle".format(pool_id))
@@ -88,10 +116,11 @@ def main():
         split_data.append(pool_data)
 
     # Create a pool which can execute more than one process paralelly
-    pool = multiprocessing.Pool(processes=PROCESSES)
+    pool = Pool(processes=PROCESSES)
 
     # Map the function
     pool.map(compute_embedding, split_data)
+    print("Started {} processes..".format(PROCESSES))
 
     # Wait until all parallel processes are done and then execute main script
     pool.close()
@@ -109,8 +138,5 @@ def main():
         pickle.dump(concat_embeddings, f)
 
     shutil.rmtree("temp")
+    print("Embeddings saved to disk.")
     # By now a single pickle file is created and the temporary files are deleted
-
-
-if __name__ == "__main__":
-    main()
