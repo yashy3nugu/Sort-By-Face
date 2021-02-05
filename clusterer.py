@@ -68,12 +68,17 @@ def chineseWhispers(data,threshold,iterations):
         nodes = list(G.nodes())
         shuffle(nodes)
 
+        # Iterate through the shuffled nodes
         for node in nodes:
+            # Get the neighbours for the node
             neighbours = G[node]
 
             pseudo_classes = {}
-
+            #Firstly collect all the pseudo-classes the neighbours belong to
             for neighbour in neighbours:
+                # For a given neighbour check the pseudo-class it belong to.
+                # For the same key in the dictionary of the pseudo-class add the 
+                # weight between the node and the current neighbour to the value of the key
 
                 if G.nodes[neighbour]['pseudoClass'] in pseudo_classes:
 
@@ -86,12 +91,13 @@ def chineseWhispers(data,threshold,iterations):
                 weight_sum = 0
                 best_pseudo_class = None
 
-                for pseudo_class in pseudo_classes:
-                    if pseudo_classes[pseudo_class] >  weight_sum:
-                        weight_sum = pseudo_classes[pseudo_class]
-                        best_pseudo_class = pseudo_class
+                # The best pseudo-class of the 
+            for pseudo_class in pseudo_classes:
+                if pseudo_classes[pseudo_class] >  weight_sum:
+                    weight_sum = pseudo_classes[pseudo_class]
+                    best_pseudo_class = pseudo_class
 
-                G.nodes[node]['pseudoClass'] = best_pseudo_class
+            G.nodes[node]['pseudoClass'] = best_pseudo_class
 
 
 if __name__ == "__main__":
