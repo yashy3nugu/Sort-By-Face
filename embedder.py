@@ -48,9 +48,9 @@ def compute_embedding(pool_data,detector="HOG"):
         else:
             output.append({"path":path,"embedding":embeddings})
 
-    f = open(pool_data['outputPath'],"wb") #rename
-    f.write(pickle.dumps(output))
-    f.close()
+    with open (pool_data['outputPath'],"wb") as f:
+        pickle.dump(output,f)
+
 
 def main():
     image_paths = get_image_paths("lfw")
@@ -88,6 +88,20 @@ def main():
 
     pool.close()
     pool.join()
+
+    concat_embeddings = []
+
+    for filename in os.listdir("temp"):
+        data = pickle.load(open(os.path.join("temp",filename),"rb"))
+
+        for dictionary in data:
+            concat_embeddings.append(dictionary)
+    
+    with open("embeddings.pickle","wb") as f:
+        f.write(pickle.dump(concat_embeddings,f))
+    
+    
+            
     
 
 
