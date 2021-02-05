@@ -138,3 +138,6 @@ Weights/
 # Embeddings and temporary files
 *.pickle
 temp/
+
+# Sorted pictures
+Sorted-pictures/

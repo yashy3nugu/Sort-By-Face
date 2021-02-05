@@ -41,9 +41,9 @@ def chineseWhispers(data,threshold,iterations):
 
         if current_node >= len(data):
             break
-
+        print("Calculating distances for node "+ str(current_node))
         # Get the euclidean distance for the face embedding of the current node and all the subsequent face embeddings
-        emb_distances = get_distances(embeddings[index+1:])
+        emb_distances = get_distances(embeddings[index+1:],data[index]['embedding'])
 
         # list containing all the edges for current node
         current_node_edges = []
@@ -61,7 +61,8 @@ def chineseWhispers(data,threshold,iterations):
         edges = edges + current_node_edges
    
     G.add_nodes_from(nodes)
-    G.add_nodes_from(edges)
+    print(edges)
+    G.add_edges_from(edges)
 
     for _ in range(iterations):
         # Get all the nodes of the graph and shuffle them
@@ -81,15 +82,13 @@ def chineseWhispers(data,threshold,iterations):
                 # weight between the node and the current neighbour to the value of the key
 
                 if G.nodes[neighbour]['pseudoClass'] in pseudo_classes:
-
-                    pseudo_classes[G.nodes[neighbour]]
                     
-                    clusters[G.nodes[neighbour]['pseudoClass']] += G[node][neighbour]['weight']
+                    pseudo_classes[G.nodes[neighbour]['pseudoClass']] += G[node][neighbour]['weight']
                 else:
-                    clusters[G.nodes[neighbour]['pseudoClass']] = G[node][neighbour]['weight']
+                    pseudo_classes[G.nodes[neighbour]['pseudoClass']] = G[node][neighbour]['weight']
                 
-                weight_sum = 0
-                best_pseudo_class = None
+            weight_sum = 0
+            best_pseudo_class = None
 
             # The best pseudo-class for the particular node is then the
             # pseudo-class whose sum of edge weights to the node is maximum for the edges the node belongs to 
@@ -97,6 +96,10 @@ def chineseWhispers(data,threshold,iterations):
                 if pseudo_classes[pseudo_class] >  weight_sum:
                     weight_sum = pseudo_classes[pseudo_class]
                     best_pseudo_class = pseudo_class
+
+            # If there is only one image of a person then dont assign the pseudo-class
+            if best_pseudo_class is None:
+                continue
 
             G.nodes[node]['pseudoClass'] = best_pseudo_class
 
@@ -119,7 +122,7 @@ def image_sorter(graph):
         destination = os.path.join(root,str(attribute["pseudoClass"]))
 
         if not os.path.exists(os.path.join(root,str(attribute["pseudoClass"]))):
-            os.mkdir(os.path.join("Sorted-pictures",str(attribute["cluster"])))
+            os.mkdir(os.path.join("Sorted-pictures",str(attribute["pseudoClass"])))
          
         shutil.copy(source,destination)
 
@@ -130,7 +133,8 @@ if __name__ == "__main__":
     data = pickle.load(open("embeddings.pickle","rb"))
     
 
-    G = nx.Graph()
+    Graph = chineseWhispers(data,0.8,20)
 
-    print(data)
+    image_sorter(Graph)
+
 
