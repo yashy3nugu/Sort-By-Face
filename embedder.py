@@ -51,7 +51,7 @@ def compute_embedding(pool_data, detector="HOG"):
             for embedding in embeddings:
                 output.append({"path": path, "embedding": embedding})
         else:
-            output.append({"path": path, "embedding": embeddings})
+            output.append({"path": path, "embedding": embeddings[0]})
 
     with open(pool_data['tempPath'], "wb") as f:
         pickle.dump(output, f)
