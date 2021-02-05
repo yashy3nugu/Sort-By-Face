@@ -102,11 +102,33 @@ def chineseWhispers(data,threshold,iterations):
 
     return G
 
+def image_sorter(graph):
+    """copies images from the source and pastes them to a directory.
+    Each sub directory represents a pseudo class which contains images of the pseudo class assigned by
+    the clustering algorithm
+
+    Args:
+        graph : networkx graph on which the clustering algorithm has been done on
+    """
+    root = "Sorted-pictures"
+    if not os.path.exists(root):
+        os.mkdir(root)
+
+    for node,attribute in graph.nodes.items():
+        source = attribute["path"]
+        destination = os.path.join(root,str(attribute["pseudoClass"]))
+
+        if not os.path.exists(os.path.join(root,str(attribute["pseudoClass"]))):
+            os.mkdir(os.path.join("Sorted-pictures",str(attribute["cluster"])))
+         
+        shutil.copy(source,destination)
+
+
+
 
 if __name__ == "__main__":
     data = pickle.load(open("embeddings.pickle","rb"))
     
-    embeddings = np.array([d['embedding'] for d in data])
 
     G = nx.Graph()
 
