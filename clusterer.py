@@ -5,8 +5,21 @@ import os
 import shutil
 from random import shuffle
 
+def get_distances(embeddings,current_face):
+    """Returns an array containing the euclidean distances between a given face's embedding and an
+    of other face embeddings 
+
+    Args:
+        embeddings : numpy array consisting of the embeddings
+        current_face : numpy array consisiting of embedding for a single face
+    """
+    # current_face is broadcasted to 0th axis of embeddings
+    return np.linalg.norm(embeddings - current_face, axis=1)
+
 def chineseWhispers(data,threshold,iterations):
 
+    G = nx.Graph()
+    # Lists used to store nodes and edges for a graph
     nodes = []
     edges = []
 
@@ -16,13 +29,40 @@ def chineseWhispers(data,threshold,iterations):
     for index, embedding in enumerate(data):
 
         # current_node represents the unique number by which a node is identified
+        # Each face in the corpus is assigned to a node which contains the pseudo class and the path to the image containing the face.
+        # If an image contains two or more faces the respective number of nodes corresponding to each face is initialized.
+        # Initially all the faces are assigned to a seperate pseudo-class.
+        # After a specific number of iterations the algorithm groups similar faces into the same pseudo-class.
+
         current_node = index+1
         
         node = (current_node, {'pseudo_class':current_node,"path":data[index]['path']})
         nodes.append(node)
 
+        if current_node >= len(data):
+            break
 
-        
+        # Get the euclidean distance for the face embedding of the current node and all the subsequent face embeddings
+        emb_distances = get_distances(embeddings[index+1:])
+
+        # list containing all the edges for current node
+        current_node_edges = []
+
+        # iterate through the euclidean distances  
+        for i,weight in enumerate(emb_distances):
+            
+            # Add an edge between the current face embedding's node and the other face embedding's node
+            # if the distance is lesser than threshold
+            if weight < threshold:
+
+                current_node_edges.append((current_node,current_node+i+1,{"weight":weight}))
+
+        # Add the current edges to the list
+        edges = edges + current_node_edges
+   
+    G.add_nodes_from(nodes)
+    G.add_nodes_from(edges)
+
 
 if __name__ == "__main__":
     data = pickle.load(open("embeddings.pickle","rb"))
