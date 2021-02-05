@@ -91,13 +91,16 @@ def chineseWhispers(data,threshold,iterations):
                 weight_sum = 0
                 best_pseudo_class = None
 
-                # The best pseudo-class of the 
+            # The best pseudo-class for the particular node is then the
+            # pseudo-class whose sum of edge weights to the node is maximum for the edges the node belongs to 
             for pseudo_class in pseudo_classes:
                 if pseudo_classes[pseudo_class] >  weight_sum:
                     weight_sum = pseudo_classes[pseudo_class]
                     best_pseudo_class = pseudo_class
 
             G.nodes[node]['pseudoClass'] = best_pseudo_class
+
+            return G
 
 
 if __name__ == "__main__":
