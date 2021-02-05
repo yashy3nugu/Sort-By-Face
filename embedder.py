@@ -12,18 +12,7 @@ from aligner import load_and_align
 #embedder = FaceNet()
 
 def get_image_paths(root_dir):
-    """Generates a list of the image paths in a root directory
-       The directory must be structured like this
-       |--root_dir
-       |  |
-       |  |--subfolder_1
-       |  |  |
-       |  |  |--image_1.jpg
-       |  |  |--image2.jpg
-       |  |  
-       |  |--subfolder_2
-
-
+    """Generates a list of paths for the images in a root directory
     Args:
         root_dir : string containing the relative path to root directory
     """
@@ -38,7 +27,6 @@ def get_image_paths(root_dir):
 
 def compute_embedding(pool_data,detector="HOG"):
     """Function used by each processing pool to compute embeddings for part of a dataset
-
 
     Args:
         split_data : 
@@ -67,13 +55,22 @@ def compute_embedding(pool_data,detector="HOG"):
 def main():
     image_paths = get_image_paths("lfw")
 
+    # Define the number of processes to be used by the pool
+    # Each process takes one core in the CPU
     PROCESSES = 6
     IMGS_PER_PROCESS = ceil(len(image_paths)/PROCESSES)
+
+    # Split the images into equal sized batches for each process
+    # Since we only need the embeddings for all the images the data can be split
+    # into equal sized batches and each process can then independently compute the embeddings for the images.
+    # The embeddings can then be concatenated after all of them are finished
 
     split_paths = []
     for i in range(0,len(image_paths),IMGS_PER_PROCESS):
         split_paths.append(image_paths[i:i+IMGS_PER_PROCESS])
 
+    # Each process saves the embeddings computed by it into a pickle file in a temporary folder.
+    # The temporary pickle files can then be loaded and we can generate a single pickle file containing all the embeddings for our data
     split_data = []
     for pool_id,batch in enumerate(split_paths):
         temp_path = os.path.join("temp","pool_{}.pickle".format(pool_id))
@@ -91,6 +88,7 @@ def main():
 
     pool.close()
     pool.join()
+    
 
 
     
