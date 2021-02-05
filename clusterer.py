@@ -100,7 +100,7 @@ def chineseWhispers(data,threshold,iterations):
 
             G.nodes[node]['pseudoClass'] = best_pseudo_class
 
-            return G
+    return G
 
 
 if __name__ == "__main__":
