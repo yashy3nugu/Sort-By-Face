@@ -3,6 +3,7 @@ import numpy as np
 import networkx as nx
 import os
 import shutil
+import argparse
 from random import shuffle
 
 def get_distances(embeddings,current_face):
@@ -130,10 +131,21 @@ def image_sorter(graph):
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "-t","--threshold",type=float,required=True,help="minimum  distance required between face embeddings to form a edge")
+    
+    parser.add_argument(
+        "-itr","--iterations",type=int,required=False,default=20,help="number of iterations for the Chinese Whispers algorithm")
+
+    args = vars(parser.parse_args())
+
     data = pickle.load(open("embeddings.pickle","rb"))
     
 
-    Graph = chineseWhispers(data,0.8,20)
+    Graph = chineseWhispers(data,args["threshold"],args["iterations"])
 
     image_sorter(Graph)
 
