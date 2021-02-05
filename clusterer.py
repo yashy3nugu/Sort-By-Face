@@ -36,7 +36,7 @@ def chineseWhispers(data,threshold,iterations):
 
         current_node = index+1
         
-        node = (current_node, {'pseudo_class':current_node,"path":data[index]['path']})
+        node = (current_node, {'pseudoClass':current_node,"path":data[index]['path']})
         nodes.append(node)
 
         if current_node >= len(data):
@@ -62,6 +62,36 @@ def chineseWhispers(data,threshold,iterations):
    
     G.add_nodes_from(nodes)
     G.add_nodes_from(edges)
+
+    for _ in range(iterations):
+        # Get all the nodes of the graph and shuffle them
+        nodes = list(G.nodes())
+        shuffle(nodes)
+
+        for node in nodes:
+            neighbours = G[node]
+
+            pseudo_classes = {}
+
+            for neighbour in neighbours:
+
+                if G.nodes[neighbour]['pseudoClass'] in pseudo_classes:
+
+                    pseudo_classes[G.nodes[neighbour]]
+                    
+                    clusters[G.nodes[neighbour]['pseudoClass']] += G[node][neighbour]['weight']
+                else:
+                    clusters[G.nodes[neighbour]['pseudoClass']] = G[node][neighbour]['weight']
+                
+                weight_sum = 0
+                best_pseudo_class = None
+
+                for pseudo_class in pseudo_classes:
+                    if pseudo_classes[pseudo_class] >  weight_sum:
+                        weight_sum = pseudo_classes[pseudo_class]
+                        best_pseudo_class = pseudo_class
+
+                G.nodes[node]['pseudoClass'] = best_pseudo_class
 
 
 if __name__ == "__main__":
