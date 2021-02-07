@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import cv2
+from aligner import load_and_align
 
 def standardize(image):
     """converts the pixel values range to the one suitable for facenet
@@ -26,4 +27,22 @@ def normalize_emb(emb, axis=-1,eps=1e-10):
         axis : axis on which to compute L2 norm
         eps : epsilon value to prevent division by zero
     """
-    normalized_emb = emb / np.sqrt(np.maximum(np.sum(np.square(x), axis=axis, keepdims=True), eps))
+    normalized_emb = emb / np.sqrt(np.maximum(np.sum(np.square(emb), axis=axis, keepdims=True), eps))
+
+def compute_embedding(img_path,model):
+
+    # can be a single image or a batch of images depending on number of faces detected in the image
+    images = load_and_align(path)
+    # standardize them
+    images = standardize(images)
+    if images is None:
+        return None
+
+    # (batch_size,1,512)
+    embeddings = model.predict(images)
+    embeddings = embeddings.reshape(embeddings.shape[0],embeddings.shape[2])
+    embeddings = normalize_emb(embeddings)
+
+    return embeddings
+
+    
