@@ -4,6 +4,7 @@ import networkx as nx
 import os
 import shutil
 import argparse
+from tqdm import tqdm
 from random import shuffle
 
 def get_distances(embeddings,current_face):
@@ -38,7 +39,7 @@ def draw_graph(data,threshold):
     embeddings = np.array([dictionary['embedding'] for dictionary in data])
 
     # Iterate through  all embeddings computed from the corpus
-    for index, embedding in enumerate(data):
+    for index, embedding in enumerate(tqdm(data,desc="Creating graph")):
 
         # current_node represents the unique number by which a node is identified
         # Each face in the corpus is assigned to a node which contains the pseudo class and the path to the image containing the face.
@@ -53,7 +54,6 @@ def draw_graph(data,threshold):
 
         if current_node >= len(data):
             break
-        print("Calculating distances for node "+ str(current_node))
         # Get the euclidean distance for the face embedding of the current node and all the subsequent face embeddings
         # We only need to caluclate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed
         emb_distances = get_distances(embeddings[index+1:],data[index]['embedding'])
@@ -89,7 +89,7 @@ def chineseWhispers(G,iterations):
         G: networkx graph where the embeddings are clustered
     """
 
-    for _ in range(iterations):
+    for _ in tqdm(range(iterations),desc="Iterations"):
         # Get all the nodes of the graph and shuffle them
         nodes = list(G.nodes())
         shuffle(nodes)
