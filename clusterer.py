@@ -17,14 +17,13 @@ def get_distances(embeddings,current_face):
     # current_face is broadcasted to 0th axis of embeddings
     return np.linalg.norm(embeddings - current_face, axis=1)
 
-def chineseWhispers(data,threshold,iterations):
-
+def draw_graph(data,threshold):
     G = nx.Graph()
     # Lists used to store nodes and edges for a graph
-    nodes = []
-    edges = []
+    G_nodes = []
+    G_edges = []
 
-    embeddings = np.array([d['embedding'] for d in data])
+    embeddings = np.array([dictionary['embedding'] for dictionary in data])
 
     # Iterate through  all embeddings computed from the corpus
     for index, embedding in enumerate(data):
@@ -38,12 +37,13 @@ def chineseWhispers(data,threshold,iterations):
         current_node = index+1
         
         node = (current_node, {'pseudoClass':current_node,"path":data[index]['path']})
-        nodes.append(node)
+        G_nodes.append(node)
 
         if current_node >= len(data):
             break
         print("Calculating distances for node "+ str(current_node))
         # Get the euclidean distance for the face embedding of the current node and all the subsequent face embeddings
+        # We only need to caluclate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed
         emb_distances = get_distances(embeddings[index+1:],data[index]['embedding'])
 
         # list containing all the edges for current node
@@ -59,11 +59,15 @@ def chineseWhispers(data,threshold,iterations):
                 current_node_edges.append((current_node,current_node+i+1,{"weight":weight}))
 
         # Add the current edges to the list
-        edges = edges + current_node_edges
+        G_edges = G_edges + current_node_edges
    
-    G.add_nodes_from(nodes)
+    G.add_nodes_from(G_nodes)
     print(edges)
-    G.add_edges_from(edges)
+    G.add_edges_from(G_edges)
+
+    return G
+
+def chineseWhispers(G,iterations):
 
     for _ in range(iterations):
         # Get all the nodes of the graph and shuffle them
@@ -106,7 +110,7 @@ def chineseWhispers(data,threshold,iterations):
 
     return G
 
-def image_sorter(graph):
+def image_sorter(G):
     """copies images from the source and pastes them to a directory.
     Each sub directory represents a pseudo class which contains images of the pseudo class assigned by
     the clustering algorithm
@@ -118,7 +122,7 @@ def image_sorter(graph):
     if not os.path.exists(root):
         os.mkdir(root)
 
-    for node,attribute in graph.nodes.items():
+    for node,attribute in G.nodes.items():
         source = attribute["path"]
         destination = os.path.join(root,str(attribute["pseudoClass"]))
 
