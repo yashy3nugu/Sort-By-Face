@@ -2,12 +2,14 @@ import pickle
 import shutil
 import argparse
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import load_model
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 from clusterer import draw_graph, chineseWhispers
-from facenet import load_and_align
+from facenet import load_and_align, compute_embedding
 
 
 def get_person(graph,user_node,destination):
@@ -46,7 +48,8 @@ if __name__ == "__main__":
     user_img = load_and_align(args["source"])
     # compute the embedding
     # shape = (1,512)
-    user_embedding = embedder.embeddings(user_img)
+    model = load_model("Weights/facenet_keras.h5")
+    user_embedding = compute_embedding(user_img,model)
 
     # Load the embeddings from the corpus
     data = pickle.load(open("embeddings.pickle","rb"))
