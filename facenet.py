@@ -42,7 +42,6 @@ def compute_embedding(img_path,model):
 
     # (batch_size,1,512)
     embeddings = model.predict(images)
-    print(embeddings.shape)
     embeddings = normalize_emb(embeddings)
 
     return embeddings

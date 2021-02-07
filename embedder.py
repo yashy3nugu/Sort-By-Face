@@ -1,19 +1,26 @@
 import cv2
 import numpy as np
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import pickle
 import argparse
 import sys
 import shutil
+import logging
+import tensorflow as tf
+tf.get_logger().setLevel(logging.ERROR)
+
+import warnings
+warnings.filterwarnings("ignore")
+
 from multiprocessing import Pool, cpu_count
 from math import ceil
-from keras_facenet import FaceNet
+from facenet import compute_embedding
 from aligner import load_and_align
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+from tensorflow.keras.models import load_model
 # Prevent tensorflow from logging INFO logs
 
-embedder = FaceNet()
 
 
 def get_image_paths(root_dir):
@@ -30,28 +37,29 @@ def get_image_paths(root_dir):
     return paths
 
 
-def compute_embedding(pool_data, detector="HOG"):
+def save_embeddings(pool_data, detector="HOG"):
     """Function used by each processing pool to compute embeddings for part of a dataset
 
     Args:
         split_data : 
     """
-
+    model = load_model("Weights/facenet_keras.h5")
     output = []
 
     for count, path in enumerate(pool_data['imagePaths']):
-        image = load_and_align(path, detector)
+        embeddings = compute_embedding(path,model)
 
-        if image is None:  # Case where no faces were found in image
+        # in case no faces are detected
+        if embeddings is None:
             continue
-
-        embeddings = embedder.embeddings(image)
 
         if embeddings.shape[0] > 1:
             for embedding in embeddings:
                 output.append({"path": path, "embedding": embedding})
         else:
             output.append({"path": path, "embedding": embeddings[0]})
+        finished = (count/len(pool_data['image_paths']))*100
+        print("Finished {} %".format(finished))
 
     with open(pool_data['tempPath'], "wb") as f:
         pickle.dump(output, f)
@@ -119,8 +127,8 @@ if __name__ == "__main__":
     pool = Pool(processes=PROCESSES)
 
     # Map the function
-    pool.map(compute_embedding, split_data)
     print("Started {} processes..".format(PROCESSES))
+    pool.map(save_embeddings, split_data)
 
     # Wait until all parallel processes are done and then execute main script
     pool.close()
