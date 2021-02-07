@@ -2,12 +2,13 @@ import pickle
 import shutil
 import argparse
 import numpy as np
+
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+
 from clusterer import draw_graph, chineseWhispers
-from aligner import load_and_align
-from keras_facenet import FaceNet
-embedder = FaceNet()
+from facenet import load_and_align
+
 
 def get_person(graph,user_node,destination):
     """Copies all the images of a cluster to the destination folder

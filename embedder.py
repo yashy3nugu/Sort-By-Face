@@ -17,7 +17,6 @@ warnings.filterwarnings("ignore")
 from multiprocessing import Pool, cpu_count
 from math import ceil
 from facenet import compute_embedding
-from aligner import load_and_align
 from tensorflow.keras.models import load_model
 # Prevent tensorflow from logging INFO logs
 
