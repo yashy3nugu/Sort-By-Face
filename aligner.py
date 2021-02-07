@@ -47,7 +47,7 @@ def load_and_align(filepath, detector="HOG"):
         return None
 
     # convert images to grayscale for the detector
-    gray_img = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
+    gray_img = cv2.cvtColor(input_image, cv2.COLOR_RGB2GRAY)
 
     rectangles = face_detector(gray_img, 2)
 

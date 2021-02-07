@@ -58,7 +58,7 @@ def save_embeddings(pool_data, detector="HOG"):
                 output.append({"path": path, "embedding": embedding})
         else:
             output.append({"path": path, "embedding": embeddings[0]})
-        finished = (count/len(pool_data['image_paths']))*100
+        finished = (count/len(pool_data['imagePaths']))*100
         print("Finished {} %".format(finished))
 
     with open(pool_data['tempPath'], "wb") as f:
