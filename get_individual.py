@@ -2,11 +2,12 @@ import pickle
 import shutil
 import argparse
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import sys
+from tensorflow.keras.models import load_model
 
 from clusterer import draw_graph, chineseWhispers
 from facenet import load_and_align, compute_embedding
@@ -53,7 +54,12 @@ if __name__ == "__main__":
     # load the user's image and compute embedding
     model = load_model("Weights/facenet_keras.h5")
     user_embedding = compute_embedding(args["source"],model)
-    print(user_embedding.shape)
+    
+    if user_embedding.shape[0] > 1:
+        print("Found more than one face in picture. Please give a picture with only one face..")
+        sys.exit()
+    elif user_embedding.shape[0] == 0:
+        print("Found no faces. Please give a picture with a face")
 
     # Load the embeddings from the corpus
     data = pickle.load(open("embeddings.pickle","rb"))
