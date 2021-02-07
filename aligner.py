@@ -38,6 +38,7 @@ def load_and_align(filepath, detector="HOG"):
         shape_predictor, desiredFaceHeight=160, desiredFaceWidth=160)
 
     input_image = cv2.imread(filepath)
+    input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
     height, width, _ = input_image.shape
 
