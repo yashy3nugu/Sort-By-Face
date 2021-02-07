@@ -32,7 +32,7 @@ def normalize_emb(emb, axis=-1,eps=1e-10):
 def compute_embedding(img_path,model):
 
     # can be a single image or a batch of images depending on number of faces detected in the image
-    images = load_and_align(path)
+    images = load_and_align(img_path)
     # standardize them
     images = standardize(images)
     if images is None:
