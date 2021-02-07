@@ -41,15 +41,19 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "-dest","--destination",required=True,help="path for the folder where you want to store images")
+    
+    parser.add_argument(
+        "-t","--threshold",type=float,required=False,default=0.83,help="minimum  distance required between face embeddings to form a edge")
+    
+    parser.add_argument(
+        "-itr","--iterations",type=int,required=False,default=30,help="number of iterations for the Chinese Whispers algorithm")
 
     args = vars(parser.parse_args())
 
-    # load the user's image
-    user_img = load_and_align(args["source"])
-    # compute the embedding
-    # shape = (1,512)
+    # load the user's image and compute embedding
     model = load_model("Weights/facenet_keras.h5")
-    user_embedding = compute_embedding(user_img,model)
+    user_embedding = compute_embedding(args["source"],model)
+    print(user_embedding.shape)
 
     # Load the embeddings from the corpus
     data = pickle.load(open("embeddings.pickle","rb"))
@@ -60,8 +64,8 @@ if __name__ == "__main__":
     user_node = len(data) + 1
     data.append({"path":args["source"],"embedding":user_embedding[0]})
 
-    graph = draw_graph(data,0.8)
-    graph = chineseWhispers(graph,20)
+    graph = draw_graph(data,args["threshold"])
+    graph = chineseWhispers(graph,args["iterations"])
 
     # Copy the respective images
     get_person(graph,user_node,args["destination"])
