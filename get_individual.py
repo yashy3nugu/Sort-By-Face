@@ -1,13 +1,19 @@
+import sys
 import pickle
 import shutil
 import argparse
 import numpy as np
 import os
+import logging
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
-import sys
 from tensorflow.keras.models import load_model
+tf.get_logger().setLevel(logging.ERROR)
+
+import warnings
+warnings.filterwarnings("ignore")
+
 
 from clusterer import draw_graph, chineseWhispers
 from facenet import load_and_align, compute_embedding
@@ -62,7 +68,7 @@ if __name__ == "__main__":
         print("Found no faces. Please give a picture with a face")
 
     # Load the embeddings from the corpus
-    data = pickle.load(open("embeddings.pickle","rb"))
+    data = pickle.load(open("embeddings_test.pickle","rb"))
 
     # We will first assign a node to the user for the graph used in the clustering algorithm
     # After running the clustering algorithm, since we know the node the user's image's embedding is in
