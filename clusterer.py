@@ -15,9 +15,21 @@ def get_distances(embeddings,current_face):
         current_face : numpy array consisiting of embedding for a single face
     """
     # current_face is broadcasted to 0th axis of embeddings
+    # To-do: Check with cosine similarity
     return np.linalg.norm(embeddings - current_face, axis=1)
 
 def draw_graph(data,threshold):
+    """Draws a networkx graph in which each node represents an image in the corpus.
+    The attributes of the node contain the embedding of the image computed by the face descriptor
+    and the cluster it belongs to. Initially all the images are given their own cluster
+
+    Args:
+        data : The list of dictionaries containing the embeddings. (obtained by running the script `embedder.py` and loading the pickle file generated)
+        threshold : Minimum distance required between two face embeddings to form an edge between their respective nodes.
+
+    Returns:
+        G: the initial networkx graph required for the Chinese Whispers algorithm
+    """
     G = nx.Graph()
     # Lists used to store nodes and edges for a graph
     G_nodes = []
@@ -62,12 +74,20 @@ def draw_graph(data,threshold):
         G_edges = G_edges + current_node_edges
    
     G.add_nodes_from(G_nodes)
-    print(edges)
     G.add_edges_from(G_edges)
 
     return G
 
 def chineseWhispers(G,iterations):
+    """Applies the Chinese Whispers algorithm to the graph
+
+    Args:
+        G : networkx graph to represent the face embeddings
+        iterations : number of iterations for the algorithm
+
+    Returns:
+        G: networkx graph where the embeddings are clustered
+    """
 
     for _ in range(iterations):
         # Get all the nodes of the graph and shuffle them
@@ -146,11 +166,14 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
 
+    #Load the embeddings
     data = pickle.load(open("embeddings.pickle","rb"))
     
-
-    Graph = chineseWhispers(data,args["threshold"],args["iterations"])
-
-    image_sorter(Graph)
+    # Draw the initial graph
+    graph = draw_graph(data,args["threshold"])
+    # Run the clustering algorithm on the graph
+    graph = chineseWhispers(graph,args["iterations"])
+    # Sort the images using the clusters
+    image_sorter(graph)
 
 
