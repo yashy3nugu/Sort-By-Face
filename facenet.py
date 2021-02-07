@@ -28,21 +28,21 @@ def normalize_emb(emb, axis=-1,eps=1e-10):
         eps : epsilon value to prevent division by zero
     """
     normalized_emb = emb / np.sqrt(np.maximum(np.sum(np.square(emb), axis=axis, keepdims=True), eps))
+    return normalized_emb
 
 def compute_embedding(img_path,model):
 
     # can be a single image or a batch of images depending on number of faces detected in the image
     images = load_and_align(img_path)
     # standardize them
-    images = standardize(images)
+    
     if images is None:
         return None
+    images = standardize(images)
 
     # (batch_size,1,512)
     embeddings = model.predict(images)
-    embeddings = embeddings.reshape(embeddings.shape[0],embeddings.shape[2])
+    print(embeddings.shape)
     embeddings = normalize_emb(embeddings)
 
     return embeddings
-
-    
