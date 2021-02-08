@@ -7,7 +7,7 @@ import tensorflow as tf
 from imutils.face_utils import FaceAligner
 from imutils.face_utils import rect_to_bb
 
-def load_and_align(filepath, detector="HOG"):
+def load_and_align(filepath):
     """
     Loads an image from the given filepath. It then gives the resulting
     array containing an aligned image from a face detector
@@ -17,16 +17,7 @@ def load_and_align(filepath, detector="HOG"):
         detector_type: The dlib detector which is to be used
     """
 
-    if detector == "HOG":
-        # Histogram of Gradients predictor (faster)
-        face_detector = dlib.get_frontal_face_detector()
-
-    elif detector == "CNN":
-        # CNN based predictor (accurate but slower)
-        face_detector = dlib.cnn_face_detection_model.v1()
-    else:
-        raise ValueError(
-            "Detector needs to be either HOG or CNN based detector")
+    face_detector = dlib.get_frontal_face_detector()
 
     shape_predictor = dlib.shape_predictor(
         'Weights/shape_predictor_68_face_landmarks.dat')

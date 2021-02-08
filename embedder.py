@@ -36,7 +36,7 @@ def get_image_paths(root_dir):
     return paths
 
 
-def save_embeddings(pool_data, detector="HOG"):
+def save_embeddings(pool_data):
     """Function used by each processing pool to compute embeddings for part of a dataset
 
     Args:
@@ -73,10 +73,6 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "--processes", required=False, type=int, default=cpu_count(),help="Number of cores to be used to compute embeddings"
-    )
-
-    parser.add_argument(
-        "--detector", required=False, default="HOG",choices=["HOG","CNN"], help="Type of frontal face detector to be used"
     )
 
     args = vars(parser.parse_args())
