@@ -50,7 +50,7 @@ if __name__ == "__main__":
         "-dest","--destination",required=True,help="path for the folder where you want to store images")
     
     parser.add_argument(
-        "-t","--threshold",type=float,required=False,default=0.83,help="minimum  distance required between face embeddings to form a edge")
+        "-t","--threshold",type=float,required=False,default=0.65,help="minimum  distance required between face embeddings to form a edge")
     
     parser.add_argument(
         "-itr","--iterations",type=int,required=False,default=30,help="number of iterations for the Chinese Whispers algorithm")
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         sys.exit()
 
     # Load the embeddings from the corpus
-    data = pickle.load(open("embeddings_test.pickle","rb"))
+    data = pickle.load(open("embeddings.pickle","rb"))
 
     # We will first assign a node to the user for the graph used in the clustering algorithm
     # After running the clustering algorithm, since we know the node the user's image's embedding is in

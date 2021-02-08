@@ -7,17 +7,17 @@ import argparse
 from tqdm import tqdm
 from random import shuffle
 
-def get_distances(embeddings,current_face):
+def get_distances(embeddings,current_face_emb):
     """Returns an array containing the euclidean distances between a given face's embedding and an
     of other face embeddings 
 
     Args:
         embeddings : numpy array consisting of the embeddings
-        current_face : numpy array consisiting of embedding for a single face
+        current_face_emb : numpy array consisiting of embedding for a single face
     """
     # current_face is broadcasted to 0th axis of embeddings
-    # To-do: Check with cosine similarity
-    return np.linalg.norm(embeddings - current_face, axis=1)
+    # NOTE: Cosine similarity between two vectors a and b is (a.b)/(||a||*||b||). But for the embeddings we already normalized them such that ||a|| and ||b|| are 1.
+    return np.sum(embeddings*current_face_emb,axis=1)
 
 def draw_graph(data,threshold):
     """Draws a networkx graph in which each node represents an image in the corpus.
@@ -66,7 +66,7 @@ def draw_graph(data,threshold):
             
             # Add an edge between the current face embedding's node and the other face embedding's node
             # if the distance is lesser than threshold
-            if weight < threshold:
+            if weight > threshold:
                 # we add a weighted edge where the weight is the euclidean distance
                 current_node_edges.append((current_node,current_node+i+1,{"weight":weight}))
 
