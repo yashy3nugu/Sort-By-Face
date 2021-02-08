@@ -42,21 +42,21 @@ def draw_graph(data,threshold):
     for index, embedding in enumerate(tqdm(data,desc="Creating graph")):
 
         # current_node represents the unique number by which a node is identified
-        # Each face in the corpus is assigned to a node which contains the pseudo class and the path to the image containing the face.
+        # Each face in the corpus is assigned to a node which contains the cluster of the node and the path to the image containing the face as attributes.
+        # Initially all the faces are assigned to a their own cluster.
         # If an image contains two or more faces the respective number of nodes corresponding to each face is initialized.
-        # Initially all the faces are assigned to a seperate pseudo-class.
-        # After a specific number of iterations the algorithm groups similar faces into the same pseudo-class.
+        # After a specific number of iterations the algorithm groups similar faces into the same cluster.
 
         current_node = index+1
         
-        node = (current_node, {'pseudoClass':current_node,"path":data[index]['path']})
+        node = (current_node, {'cluster':current_node,"source":data[index]["path"]})
         G_nodes.append(node)
 
         if current_node >= len(data):
             break
         # Get the euclidean distance for the face embedding of the current node and all the subsequent face embeddings
         # We only need to caluclate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed
-        emb_distances = get_distances(embeddings[index+1:],data[index]['embedding'])
+        emb_distances = get_distances(embeddings[index+1:],data[index]["embedding"])
 
         # list containing all the edges for current node
         current_node_edges = []
@@ -67,10 +67,10 @@ def draw_graph(data,threshold):
             # Add an edge between the current face embedding's node and the other face embedding's node
             # if the distance is lesser than threshold
             if weight < threshold:
-
+                # we add a weighted edge where the weight is the euclidean distance
                 current_node_edges.append((current_node,current_node+i+1,{"weight":weight}))
 
-        # Add the current edges to the list
+        # concatenate the current edges to the list
         G_edges = G_edges + current_node_edges
    
     G.add_nodes_from(G_nodes)
@@ -99,34 +99,35 @@ def chinese_whispers(G,iterations):
             # Get the neighbours for the node
             neighbours = G[node]
 
-            pseudo_classes = {}
-            #Firstly collect all the pseudo-classes the neighbours belong to
+            neighbour_clusters = {}
+            #Firstly collect all the clusters the neighbours belong to
             for neighbour in neighbours:
-                # For a given neighbour check the pseudo-class it belong to.
-                # For the same key in the dictionary of the pseudo-class add the 
-                # weight between the node and the current neighbour to the value of the key
+                # For a given neighbour check the cluster it belong to.
+                # For the same key in the dictionary of the cluster add the 
+                # weight between the node and the current neighbour to the value of the key 
+                # (i.e we are calculating the sum of weights of edges in the neighbours which belong to a particular cluster)
 
-                if G.nodes[neighbour]['pseudoClass'] in pseudo_classes:
+                if G.nodes[neighbour]['cluster'] in neighbour_clusters:
                     
-                    pseudo_classes[G.nodes[neighbour]['pseudoClass']] += G[node][neighbour]['weight']
+                    neighbour_clusters[G.nodes[neighbour]['cluster']] += G[node][neighbour]['weight']
                 else:
-                    pseudo_classes[G.nodes[neighbour]['pseudoClass']] = G[node][neighbour]['weight']
+                    neighbour_clusters[G.nodes[neighbour]['cluster']] = G[node][neighbour]['weight']
                 
             weight_sum = 0
-            best_pseudo_class = None
+            best_cluster = None
 
-            # The best pseudo-class for the particular node is then the
-            # pseudo-class whose sum of edge weights to the node is maximum for the edges the node belongs to 
-            for pseudo_class in pseudo_classes:
-                if pseudo_classes[pseudo_class] >  weight_sum:
-                    weight_sum = pseudo_classes[pseudo_class]
-                    best_pseudo_class = pseudo_class
+            # The best cluster for the particular node is then the
+            # cluster whose sum of edge weights to the node is maximum for the edges the node belongs to 
+            for cluster in neighbour_clusters:
+                if neighbour_clusters[cluster] >  weight_sum:
+                    weight_sum = neighbour_clusters[cluster]
+                    best_cluster = cluster
 
-            # If there is only one image of a person then dont assign the pseudo-class
-            if best_pseudo_class is None:
+            # If there is only one image of a person then dont assign the cluster
+            if best_cluster is None:
                 continue
 
-            G.nodes[node]['pseudoClass'] = best_pseudo_class
+            G.nodes[node]['cluster'] = best_cluster
 
     return G
 
@@ -147,7 +148,7 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     #Load the embeddings
-    data = pickle.load(open("embeddings.pickle","rb"))
+    data = pickle.load(open("embeddings_test.pickle","rb"))
     
     # Draw the initial graph
     graph = draw_graph(data,args["threshold"])

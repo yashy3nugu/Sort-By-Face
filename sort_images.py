@@ -21,11 +21,11 @@ def image_sorter(G):
         os.mkdir(root)
 
     for node,attribute in G.nodes.items():
-        source = attribute["path"]
-        destination = os.path.join(root,str(attribute["pseudoClass"]))
+        source = attribute["source"]
+        destination = os.path.join(root,str(attribute["cluster"]))
 
-        if not os.path.exists(os.path.join(root,str(attribute["pseudoClass"]))):
-            os.mkdir(os.path.join(root,str(attribute["pseudoClass"])))
+        if not os.path.exists(os.path.join(root,str(attribute["cluster"]))):
+            os.mkdir(os.path.join(root,str(attribute["cluster"])))
          
         shutil.copy(source,destination)
 

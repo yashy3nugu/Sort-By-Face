@@ -15,7 +15,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-from clusterer import draw_graph, chineseWhispers
+from CW import draw_graph, chinese_whispers
 from facenet import load_and_align, compute_embedding
 
 
@@ -26,13 +26,13 @@ def get_person(graph,user_node,destination):
         graph : networkx graph on which the clustering algorithm has been done
         user_node : node pertaining to the user's image in the parameter graph
     """
-    user_cluster = graph.nodes[user_node]['pseudoClass']
+    user_cluster = graph.nodes[user_node]['cluster']
     if not os.path.exists(destination):
         os.mkdir(destination)
     
     for node,attribute in graph.nodes.items():
-        if attribute['pseudoClass'] == user_cluster:
-            shutil.copy(attribute['path'],destination)
+        if attribute['cluster'] == user_cluster:
+            shutil.copy(attribute['source'],destination)
     print("Your images have been copied to the folder {}".format(destination))
         
          
@@ -66,6 +66,7 @@ if __name__ == "__main__":
         sys.exit()
     elif user_embedding.shape[0] == 0:
         print("Found no faces. Please give a picture with a face")
+        sys.exit()
 
     # Load the embeddings from the corpus
     data = pickle.load(open("embeddings_test.pickle","rb"))
@@ -77,7 +78,7 @@ if __name__ == "__main__":
     data.append({"path":args["source"],"embedding":user_embedding[0]})
 
     graph = draw_graph(data,args["threshold"])
-    graph = chineseWhispers(graph,args["iterations"])
+    graph = chinese_whispers(graph,args["iterations"])
 
     # Copy the respective images
     get_person(graph,user_node,args["destination"])
