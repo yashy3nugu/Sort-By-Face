@@ -22,16 +22,20 @@ from tensorflow.keras.models import load_model
 
 
 def get_image_paths(root_dir):
-    """Generates a list of paths for the images in a root directory
+    """Generates a list of paths for the images in a root directory and ignores rest of the files
     Args:
         root_dir : string containing the relative path to root directory
     Returns:
         paths : list containing paths of the images in the directory
     """
+    if not os.path.exists(root_dir):
+        print("Directory not found, please enter valid directory..")
+        sys.exit(1)
+
     paths = []
     for rootDir, directory, filenames in os.walk(root_dir):
         for filename in filenames:
-            if filename.lower().endswith(".jpg") or filename.lower().endswith(".jpeg") or filename.lower().endswith(".png"):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp')):
                 paths.append(os.path.join(rootDir, filename))
 
     return paths
@@ -59,10 +63,10 @@ def save_embeddings(process_data):
                 output.append({"path": path, "embedding": embedding})
         else:
             output.append({"path": path, "embedding": embeddings[0]})
-            
-        finished = (count/len(process_data['image_paths']))*100
+
+        #finished = (count/len(process_data['image_paths']))*100
         # remove later
-        print("Finished {} %".format(finished))
+        #print("Finished {} %".format(finished))
 
     with open(process_data['temp_path'], "wb") as f:
         pickle.dump(output, f)
@@ -82,6 +86,10 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     image_paths = get_image_paths(args['source'])
+
+    if len(image_paths) == 0:
+        print("Found 0 images. Please enter a directory with images..")
+        sys.exit(1)
 
     print("Found {} images..".format(len(image_paths)))
 
@@ -112,7 +120,7 @@ if __name__ == "__main__":
 
     split_data = []
     for process_id, batch in enumerate(split_paths):
-        temp_path = os.path.join("temp", "pool_{}.pickle".format(process_id))
+        temp_path = os.path.join("temp", "process_{}.pickle".format(process_id))
 
         process_data = {
             "process_id": process_id,
@@ -147,5 +155,5 @@ if __name__ == "__main__":
         pickle.dump(concat_embeddings, f)
 
     shutil.rmtree("temp")
-    print("Embeddings saved to disk..")
+    print("Saved embeddings of {} faces to disk..".format(len(concat_embeddings)))
     # By now a single pickle file is created and the temporary files are deleted
