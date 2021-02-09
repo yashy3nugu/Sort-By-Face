@@ -61,7 +61,11 @@ if __name__ == "__main__":
     model = load_model("Models/facenet_keras.h5")
     user_embedding = compute_embedding(args["source"],model)
     
-    if user_embedding.shape[0] > 1:
+    if user_embedding is None:
+        # cv2.imread() returns a NoneType object instead of throwing an error for invalid image paths
+        print("Image not found, please enter valid image path")
+        sys.exit(1)
+    elif user_embedding.shape[0] > 1:
         print("Found more than one face in picture. Please give a picture with only one face..")
         sys.exit(1)
     elif user_embedding.shape[0] == 0:
