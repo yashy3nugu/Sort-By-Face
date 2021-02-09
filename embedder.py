@@ -18,6 +18,7 @@ from multiprocessing import Pool, cpu_count
 from math import ceil
 from facenet import compute_embedding
 from tensorflow.keras.models import load_model
+from tqdm import tqdm
 
 
 
@@ -47,9 +48,12 @@ def save_embeddings(process_data):
     Args:
         process_data : dictionary consisting of data to be used by the pool 
     """
+    # load the model for each process
     model = load_model("Models/facenet_keras.h5")
-    output = []
+    # progress bar to track
+    bar = tqdm(total=len(process_data['image_paths']),position=process_data['process_id'])
 
+    output = []
     for count, path in enumerate(process_data['image_paths']):
         embeddings = compute_embedding(path,model)
 
@@ -63,11 +67,11 @@ def save_embeddings(process_data):
                 output.append({"path": path, "embedding": embedding})
         else:
             output.append({"path": path, "embedding": embeddings[0]})
+        bar.update()
 
-        #finished = (count/len(process_data['image_paths']))*100
-        # remove later
-        #print("Finished {} %".format(finished))
-
+    bar.close()
+    bar.clear()
+    # write the embeddings computed by a process into the temporary folder
     with open(process_data['temp_path'], "wb") as f:
         pickle.dump(output, f)
 
