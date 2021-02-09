@@ -10,6 +10,12 @@ generate 128-Dimensional embeddings.
 - After the algorithm the images are copied into seperate directories corresponding to their clusters.
 - For a person who wants to retrieve only his images, only the images which are in the same cluster as the picture submitted by the user is copied.
 
+# Evaluation of clustering algorithm.
+On testing on the Labeled Faces in the Wild dataset the following results were obtained. (threshold = 0.65, iterations=30)
+- **Precision**: 0.85
+- **Recall**: 0.99
+- **F-measure**: 0.92
+
 # References
 This project is inspired by the ideas presented in the following papers
 
