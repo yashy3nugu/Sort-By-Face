@@ -49,13 +49,7 @@ def load_and_align(filepath):
 
     rectangles = face_detector(gray_img, 2)
 
-    if len(rectangles) == 1:
-        aligned_face = face_aligner.align(input_image, gray_img, rectangles[0])
-
-        return np.expand_dims(aligned_face, axis=0)
-
-    # If multiple faces are found then return a batch of images
-    elif len(rectangles) > 0:
+    if len(rectangles) > 0:
 
         aligned_faces = []
         for rectangle in rectangles:
@@ -63,6 +57,7 @@ def load_and_align(filepath):
             aligned_face = face_aligner.align(input_image, gray_img, rectangle)
             aligned_faces.append(aligned_face)
 
+        # returns numpy array of shape (1,160,160,3)
         return np.array(aligned_faces)
 
     # If no faces are detected return None which is understood by the script calling it
