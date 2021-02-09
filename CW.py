@@ -14,6 +14,8 @@ def get_distances(embeddings,current_face_emb):
     Args:
         embeddings : numpy array consisting of the embeddings
         current_face_emb : numpy array consisiting of embedding for a single face
+    Returns:
+        a numpy array containing cosine similarities between embeddings and current_face_emb
     """
     # current_face is broadcasted to 0th axis of embeddings
     # NOTE: Cosine similarity between two vectors a and b is (a.b)/(||a||*||b||). But for the embeddings we already normalized them such that ||a|| and ||b|| are 1.
@@ -36,6 +38,7 @@ def draw_graph(data,threshold):
     G_nodes = []
     G_edges = []
 
+    # Create a numpy array containing all the embeddings
     embeddings = np.array([dictionary['embedding'] for dictionary in data])
 
     # Iterate through  all embeddings computed from the corpus
@@ -55,10 +58,10 @@ def draw_graph(data,threshold):
         if current_node >= len(data):
             break
         # Get the cosine similarities for the face embedding of the current node and all the subsequent face embeddings
-        # We only need to caluclate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed by the code below
+        # We only need to calculate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed by the code below
         emb_distances = get_distances(embeddings[index+1:],data[index]["embedding"])
 
-        # list containing all the edges for current node
+        # list all the edges for current node
         current_node_edges = []
 
         # iterate through the similarities  
@@ -100,11 +103,10 @@ def chinese_whispers(G,iterations):
             neighbours = G[node]
 
             neighbour_clusters = {}
-            #Firstly collect all the clusters the neighbours belong to
+            #Firstly collect all the clusters the neighbours belong to. (does not iterate if no neighbours are present)
             for neighbour in neighbours:
                 # For a given neighbour check the cluster it belong to.
-                # For the same key in the dictionary of the cluster add the 
-                # weight between the node and the current neighbour to the value of the key 
+                # For the same key in the dictionary add the weight between the node and the current neighbour to the value of the key 
                 # (i.e we are calculating the sum of weights of edges in the neighbours which belong to a particular cluster)
 
                 if G.nodes[neighbour]['cluster'] in neighbour_clusters:
@@ -123,7 +125,7 @@ def chinese_whispers(G,iterations):
                     weight_sum = neighbour_clusters[cluster]
                     best_cluster = cluster
 
-            # If there is only one image of a person then dont assign the cluster
+            # If the embedding is not close to any other embedding (i.e only one picture of the person) dont change the cluster
             if best_cluster is None:
                 continue
 
@@ -140,10 +142,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-t","--threshold",type=float,required=True,help="minimum cosine similarity required between two face embeddings to form a edge")
+        "-t", "--threshold", type=float,required=True, help="minimum cosine similarity required between two face embeddings to form a edge")
     
     parser.add_argument(
-        "-itr","--iterations",type=int,required=False,default=20,help="number of iterations for the Chinese Whispers algorithm")
+        "-itr", "--iterations", type=int, required=False, default=20, help="number of iterations for the Chinese Whispers algorithm")
 
     args = vars(parser.parse_args())
 

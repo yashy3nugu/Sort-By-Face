@@ -6,15 +6,15 @@ import numpy as np
 import os
 import logging
 
-# Prevent tensorflow from logging into the command line from multiple processes simultaneously
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
-from tensorflow.keras.models import load_model
 tf.get_logger().setLevel(logging.ERROR)
 import warnings
 warnings.filterwarnings("ignore")
 
 
+from tensorflow.keras.models import load_model
 from CW import draw_graph, chinese_whispers
 from facenet import load_and_align, compute_embedding
 
