@@ -1,5 +1,14 @@
 # Sort-By-Face
-Sorting pictures of a person from a corpus of photos.
+This is an application with which you can either sort all the pictures by faces from a corpus of photos or retrieve all your photos from the corpus  
+by submitting a picture of yours.
+
+# How it works
+- Given a corpus of photos inside a directory this application first detects the faces in the photos and runs a Convolutional Neural Network to  
+generate 128-Dimensional embeddings. 
+- These embeddings are then used in a graph based clustering algorithm called 'Chinese Whispers'.  
+- The clustering algorithm assigns a cluster to each individual identified by it.  
+- After the algorithm the images are copied into seperate directories corresponding to their clusters.
+- For a person who wants to retrieve only his images, only the images which are in the same cluster as the picture submitted by the user is copied.
 
 # References
 This project is inspired by the ideas presented in the following papers
