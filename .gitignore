@@ -132,8 +132,8 @@ dmypy.json
 lfw/
 testing-images
 
-# Weights
-Weights/
+# Models
+Models/
 
 # Embeddings and temporary files
 *.pickle

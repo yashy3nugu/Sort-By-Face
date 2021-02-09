@@ -42,7 +42,7 @@ def save_embeddings(pool_data):
     Args:
         split_data : 
     """
-    model = load_model("Weights/facenet_keras.h5")
+    model = load_model("Models/facenet_keras.h5")
     output = []
 
     for count, path in enumerate(pool_data['imagePaths']):

@@ -20,7 +20,7 @@ def load_and_align(filepath):
     face_detector = dlib.get_frontal_face_detector()
 
     shape_predictor = dlib.shape_predictor(
-        'Weights/shape_predictor_68_face_landmarks.dat')
+        'Models/shape_predictor_68_face_landmarks.dat')
 
     # Resize and align the face for facenet detector (facenet expects 160 by 160 images)
     face_aligner = FaceAligner(
