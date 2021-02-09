@@ -27,11 +27,12 @@ def get_person(graph,user_node,destination):
         user_node : node pertaining to the user's image in the graph
     """
     user_cluster = graph.nodes[user_node]['cluster']
+    user_path = graph.nodes[user_node]['source']
     if not os.path.exists(destination):
         os.mkdir(destination)
     
     for node,attribute in graph.nodes.items():
-        if attribute['cluster'] == user_cluster:
+        if (attribute['cluster'] == user_cluster) and (attribute['source'] != user_path):
             shutil.copy(attribute['source'],destination)
 
     print("Your images have been copied to the folder {}".format(destination))
