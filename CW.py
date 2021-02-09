@@ -49,25 +49,25 @@ def draw_graph(data,threshold):
 
         current_node = index+1
         
-        node = (current_node, {'cluster':current_node,"source":data[index]["path"]})
+        node = (current_node, {'cluster':"Person {}".format(current_node),"source":data[index]["path"]})
         G_nodes.append(node)
 
         if current_node >= len(data):
             break
-        # Get the euclidean distance for the face embedding of the current node and all the subsequent face embeddings
-        # We only need to caluclate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed
+        # Get the cosine similarities for the face embedding of the current node and all the subsequent face embeddings
+        # We only need to caluclate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed by the code below
         emb_distances = get_distances(embeddings[index+1:],data[index]["embedding"])
 
         # list containing all the edges for current node
         current_node_edges = []
 
-        # iterate through the euclidean distances  
+        # iterate through the similarities  
         for i,weight in enumerate(emb_distances):
             
             # Add an edge between the current face embedding's node and the other face embedding's node
-            # if the distance is lesser than threshold
+            # if the cosine similarity is greater than the threshold
             if weight > threshold:
-                # we add a weighted edge where the weight is the euclidean distance
+                # we add a weighted edge where the weight is the cosine similarity.
                 current_node_edges.append((current_node,current_node+i+1,{"weight":weight}))
 
         # concatenate the current edges to the list
@@ -117,7 +117,7 @@ def chinese_whispers(G,iterations):
             best_cluster = None
 
             # The best cluster for the particular node is then the
-            # cluster whose sum of edge weights to the node is maximum for the edges the node belongs to 
+            # cluster whose sum of edge weights to the node is maximum for the edges the node belongs to. 
             for cluster in neighbour_clusters:
                 if neighbour_clusters[cluster] >  weight_sum:
                     weight_sum = neighbour_clusters[cluster]
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-t","--threshold",type=float,required=True,help="minimum  distance required between face embeddings to form a edge")
+        "-t","--threshold",type=float,required=True,help="minimum cosine similarity required between two face embeddings to form a edge")
     
     parser.add_argument(
         "-itr","--iterations",type=int,required=False,default=20,help="number of iterations for the Chinese Whispers algorithm")
