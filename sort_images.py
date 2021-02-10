@@ -26,8 +26,10 @@ def image_sorter(G):
 
         if not os.path.exists(os.path.join(root,attribute["cluster"])):
             os.mkdir(os.path.join(root,attribute["cluster"]))
-         
-        shutil.copy(source,destination)
+        try: 
+            shutil.copy(source,destination)
+        except FileNotFoundError:
+            pass
 
 if __name__ == "__main__":
 
@@ -42,7 +44,7 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     #Load the embeddings
-    data = pickle.load(open("embeddings.pickle","rb"))
+    data = pickle.load(open("embeddings_test.pickle","rb"))
     
     # Draw the initial graph
     graph = draw_graph(data,args["threshold"])

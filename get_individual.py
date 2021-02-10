@@ -33,7 +33,10 @@ def get_person(graph,user_node,destination):
     
     for node,attribute in graph.nodes.items():
         if (attribute['cluster'] == user_cluster) and (attribute['source'] != user_path):
-            shutil.copy(attribute['source'],destination)
+            try:
+                shutil.copy(attribute['source'],destination)
+            except FileNotFoundError:
+                pass
 
     print("Your images have been copied to the folder {}".format(destination))
         
@@ -73,7 +76,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Load the embeddings from the corpus
-    data = pickle.load(open("embeddings.pickle","rb"))
+    data = pickle.load(open("embeddings_test.pickle","rb"))
 
     # We will first assign a node to the user for the graph used in the clustering algorithm
     # After running the clustering algorithm, since we know the node the user's image's embedding is in
