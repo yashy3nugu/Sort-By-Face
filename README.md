@@ -63,7 +63,7 @@ In Layman terms we have gathered all the 'photobombs' of George Bush in the data
 - For a person who wants to retrieve only his images, only the images which are in the same cluster as the picture submitted by the user is copied.
 
 ## Model used for embedding extraction
-The project uses a model which was first introduced in this [paper](https://arxiv.org/abs/1503.03832). It uses a keras model converted from 
+The project uses a model which was first introduced in this [[4] ](https://arxiv.org/abs/1503.03832). It uses a keras model converted from 
 David Sandberg's implementation in [this](https://github.com/davidsandberg/facenet) repository.  
 In particular it uses the model with the name `20170512-110547` which was converted using [this](https://github.com/nyoki-mtl/keras-facenet/blob/master/notebook/tf_to_keras.ipynb) script.
 
@@ -74,8 +74,8 @@ The models are trained on a huge amount of images out of which triplets are gene
 
 ## The clustering algorithm
 ![](assets/CW.png)  
-This project uses a graph based algorithm called Chinese Whispers to cluster the faces. It was first introduced for Natural Language Processing tasks by Chris Biemann in [this](https://www.researchgate.net/publication/228670574_Chinese_whispers_An_efficient_graph_clustering_algorithm_and_its_application_to_natural_language_processing_problems) paper.   
-The papers [here](https://repository.tudelft.nl/islandora/object/uuid:a9f82787-ac3d-4ff1-8239-4f3c1c6414b9) and [here](https://www.hindawi.com/journals/cin/2019/6065056/) use the concept of a threshold to assign edges to the graphs. i.e there is an edge between two nodes (faces) only if their (dis)similarity metric of their representations is above/below a certain threshold. In this implementation I have used cosine similarity between face embeddings as the similarity metric.  
+This project uses a graph based algorithm called Chinese Whispers to cluster the faces. It was first introduced for Natural Language Processing tasks by Chris Biemann in [[3] ](https://www.researchgate.net/publication/228670574_Chinese_whispers_An_efficient_graph_clustering_algorithm_and_its_application_to_natural_language_processing_problems) paper.   
+The authors in [[1] ](https://repository.tudelft.nl/islandora/object/uuid:a9f82787-ac3d-4ff1-8239-4f3c1c6414b9)and [[2] ](https://www.hindawi.com/journals/cin/2019/6065056/)used the concept of a threshold to assign edges to the graphs. i.e there is an edge between two nodes (faces) only if their (dis)similarity metric of their representations is above/below a certain threshold. In this implementation I have used cosine similarity between face embeddings as the similarity metric.  
 
 By combining these ideas we draw the graph like this:
 1. Assign a node to every face detected in the dataset (not every image, because there can be multiple faces in a single image)
