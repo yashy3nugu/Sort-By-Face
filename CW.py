@@ -5,7 +5,6 @@ import os
 import shutil
 import argparse
 from tqdm import tqdm
-from random import shuffle
 
 def get_similarity(embeddings,current_face_emb):
     """Returns an array containing the cosine similarity between a given face's embedding and an
@@ -94,8 +93,8 @@ def chinese_whispers(G,iterations):
 
     for _ in tqdm(range(iterations),desc="Iterations"):
         # Get all the nodes of the graph and shuffle them
-        nodes = list(G.nodes())
-        shuffle(nodes)
+        nodes = np.array(G.nodes())
+        np.random.shuffle(nodes)
 
         # Iterate through the shuffled nodes
         for node in nodes:
