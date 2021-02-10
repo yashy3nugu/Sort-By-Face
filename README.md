@@ -36,6 +36,23 @@ for better results:
 - This script also allows to tweak with the parameters with the same arguments as mentioned before.
 - Once clustering is done all the pictures are copied into the destination
 
+# Evaluation of clustering algorithm.
+The notebook 
+On testing on the Labeled Faces in the Wild dataset the following results were obtained. (threshold = 0.67, iterations=30)
+- **Precision**: 0.89
+- **Recall**: 0.99
+- **F-measure**: 0.95
+- **Clusters formed**: 6090 (5749 unique labels in the dataset)
+
+The code for evaluation has been uploaded in this [notebook](evaluate.ipynb)
+
+The LFW dataset has many images containing more than one face but only has a single label. This can have an effect on the evaluation metrics and the clusters formed. These factors have been discussed in detail in the [notebook](evaluate.ipynb).  
+For example by running the script `get_individual.py` and providing a photo of George Bush will result in some images like this.   
+In Layman terms we have gathered all the 'photobombs' of George Bush in the dataset, but all the labels for the 'photobombs' correspond to a different person.  
+**NOTE**: this does not effect the clustering for the original person as the scripts treat each face seperately but refer to the same image.  
+  
+<img src="assets\photobomb.jpg" width=450px> 
+
 # How it works
 - Given a corpus of photos inside a directory this application first detects the faces in the photos and runs a Convolutional Neural Network to  
 generate 128-Dimensional embeddings. 
@@ -71,23 +88,6 @@ And the algorithm used for clustering is:
 5. In case of a tie between clusters, any one of them is assigned randomly.  
 
 The Chinese Whispers algorithm does not converge nor is it deterministic, but it turns out be a very efficient algorithm for some tasks.
-
-# Evaluation of clustering algorithm.
-The notebook 
-On testing on the Labeled Faces in the Wild dataset the following results were obtained. (threshold = 0.67, iterations=30)
-- **Precision**: 0.89
-- **Recall**: 0.99
-- **F-measure**: 0.95
-- **Clusters formed**: 6090 (5749 unique people in the dataset)
-
-The code for evaluation has been uploaded in this [notebook](evaluate.ipynb)
-
-The LFW dataset has many images containing more than one face but only has a single label. This can have an effect on the evaluation metrics and the clusters formed. These factors have been discussed in detail in the [notebook](evaluate.ipynb).  
-For example by running the script `get_individual.py` and providing a photo of George Bush will result in some images like this.   
-In Layman terms we have gathered all the 'photobombs' of George Bush in the dataset, but all the labels for the 'photobombs' correspond to a different person.  
-**NOTE**: this does not effect the clustering for the original person as the scripts treat each face seperately but refer to the same image.  
-  
-<img src="assets\photobomb.jpg" width=450px> 
 
 # References
 This project is inspired by the ideas presented in the following papers
