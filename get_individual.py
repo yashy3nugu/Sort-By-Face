@@ -61,7 +61,7 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     # load the user's image and compute embedding
-    model = load_model("Models/facenet_keras.h5")
+    model = load_model("Models/facenet.h5")
     user_embedding = compute_embedding(args["source"],model)
     
     if user_embedding is None:

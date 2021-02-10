@@ -49,7 +49,7 @@ def save_embeddings(process_data):
         process_data : dictionary consisting of data to be used by the pool 
     """
     # load the model for each process
-    model = load_model("Models/facenet_keras.h5")
+    model = load_model("Models/facenet.h5")
     # progress bar to track
     bar = tqdm(total=len(process_data['image_paths']),position=process_data['process_id'])
 
