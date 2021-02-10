@@ -72,7 +72,7 @@ In particular it uses the model with the name `20170512-110547` which was conver
 All the facenet models are trained using a loss called triplet loss. This loss ensures that the model gives closer embeddings for same people and farther embeddings for different people.  
 The models are trained on a huge amount of images out of which triplets are generated.
 
-# The clustering algorithm
+## The clustering algorithm
 ![](assets\CW.png)  
 This project uses a graph based algorithm called Chinese Whispers to cluster the faces. It was first introduced for Natural Language Processing tasks by Chris Biemann in [this](https://www.researchgate.net/publication/228670574_Chinese_whispers_An_efficient_graph_clustering_algorithm_and_its_application_to_natural_language_processing_problems) paper.   
 The papers [here](https://repository.tudelft.nl/islandora/object/uuid:a9f82787-ac3d-4ff1-8239-4f3c1c6414b9) and [here](https://www.hindawi.com/journals/cin/2019/6065056/) use the concept of a threshold to assign edges to the graphs. i.e there is an edge between two nodes (faces) only if their (dis)similarity metric of their representations is above/below a certain threshold. In this implementation I have used cosine similarity between face embeddings as the similarity metric.  
