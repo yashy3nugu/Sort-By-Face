@@ -23,6 +23,7 @@ If anaconda isn't installed, install it from [here](https://www.anaconda.com/pro
 ## Sort an entire corpus of photos
 - Run `python sort_images.py`. This runs the clustering algorithm with the default parameters of threshold and iterations for the clustering algorithm.
 - If you want to tweak the parameters, run `python sort_images.py -t threshold -itr num-iterations` to alter the threshold and iterations respectively.
+- If you think pictures are missing try reducing the threshold and increasing the iterations. Something like `0.64` and `35` iterations should work.
 - Once the clustering is finished all the images are stored into a folder called `Sorted-pictures`. Each subdirectory in it corresponds to the unique person identified.
 
 ## Get pictures of a single person from the corpus.
@@ -53,6 +54,24 @@ In particular it uses the model with the name `20170512-110547` which was conver
 All the facenet models are trained using a loss called triplet loss. This loss ensures that the model gives closer embeddings for same people and farther embeddings for different people.  
 The models are trained on a huge amount of images out of which triplets are generated.
 
+# The clustering algorithm
+![](assets\CW.png)  
+This project uses a graph based algorithm called Chinese Whispers to cluster the faces. It was first introduced for Natural Language Processing tasks by Chris Biemann in [this](https://www.researchgate.net/publication/228670574_Chinese_whispers_An_efficient_graph_clustering_algorithm_and_its_application_to_natural_language_processing_problems) paper.   
+The papers [here](https://repository.tudelft.nl/islandora/object/uuid:a9f82787-ac3d-4ff1-8239-4f3c1c6414b9) and [here](https://www.hindawi.com/journals/cin/2019/6065056/) use the concept of a threshold to assign edges to the graphs. i.e there is an edge between two nodes (faces) only if their (dis)similarity metric of their representations is above/below a certain threshold. In this implementation I have used cosine similarity between face embeddings as the similarity metric.  
+
+By combining these ideas we draw the graph like this:
+1. Assign a node to every face detected in the dataset (not every image, because there can be multiple faces in a single image)
+2. Add an edge between two nodes only if the cosine similarity between their embeddings is greater than a threshold.
+
+And the algorithm used for clustering is:
+1. Initially all the nodes are given a seperate cluster.
+2. The algorithm does a specific number of iterations.
+3. For each iteration the nodes are traversed randomly.
+4. Each node is given the cluster which has the highest rank in it's neighbourhood. The rank of a cluster here is the sum of weights between the current node and the neighbours belonging to that cluster.
+5. In case of a tie between clusters, any one of them is assigned randomly.  
+
+The Chinese Whispers algorithm does not converge nor is it deterministic, but it turns out be a very efficient algorithm for some tasks.
+
 # Evaluation of clustering algorithm.
 The notebook 
 On testing on the Labeled Faces in the Wild dataset the following results were obtained. (threshold = 0.67, iterations=30)
@@ -61,8 +80,9 @@ On testing on the Labeled Faces in the Wild dataset the following results were o
 - **F-measure**: 0.95
 - **Clusters formed**: 6090 (5749 unique people in the dataset)
 
-The LFW dataset has many images containing more than one face but only has a single label. This can have an effect on the evaluation metrics and the clusters formed. These factors have been discussed in detail in the notebook.
+The code for evaluation has been uploaded in this [notebook](evaluate.ipynb)
 
+The LFW dataset has many images containing more than one face but only has a single label. This can have an effect on the evaluation metrics and the clusters formed. These factors have been discussed in detail in the [notebook](evaluate.ipynb).  
 For example by running the script `get_individual.py` and providing a photo of George Bush will result in some images like this.   
 In Layman terms we have gathered all the 'photobombs' of George Bush in the dataset, but all the labels for the 'photobombs' correspond to a different person.  
 **NOTE**: this does not effect the clustering for the original person as the scripts treat each face seperately but refer to the same image.  
