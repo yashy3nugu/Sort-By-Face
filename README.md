@@ -2,6 +2,18 @@
 This is an application with which you can either sort all the pictures by faces from a corpus of photos or retrieve all your photos from the corpus  
 by submitting a picture of yours.
 
+# Setup
+## Requirements
+- ###### python 3.8.5
+- ###### Anaconda 4.9.2+  
+If anaconda isn't installed, install it from [here](https://www.anaconda.com/products/individual)
+
+- Clone the repository
+- Download the folder called `Models/` from [here](https://drive.google.com/drive/folders/16QKtJwQusmANayPykb4cvTpVPwzZVAE8?usp=sharing) into the same directory where you cloned the repository.
+- Run `conda env create -f environment.yml` to create the environment.
+- Run `conda activate sorter`.
+- In case you want to run the [notebook](evaluate.ipynb) then make sure Jupyter notebook is installed and accessible for all environments in your system.
+
 # Instructions
 - Put the directory where the folders are located into the project folder.
 - Run `python embedder.py -src /path/to/images`. This command utilizes all the cores in the system for parallel processing.
