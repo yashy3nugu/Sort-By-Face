@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-t", "--threshold", type=float, required=False, default=0.65, help="minimum  distance required between face embeddings to form a edge")
+        "-t", "--threshold", type=float, required=False, default=0.67, help="minimum  distance required between face embeddings to form a edge")
     
     parser.add_argument(
         "-itr", "--iterations", type=int, required=False, default=30, help="number of iterations for the Chinese Whispers algorithm")
