@@ -131,31 +131,3 @@ def chinese_whispers(G,iterations):
             G.nodes[node]['cluster'] = best_cluster
 
     return G
-
-
-
-
-
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "-t", "--threshold", type=float,required=True, help="minimum cosine similarity required between two face embeddings to form a edge")
-    
-    parser.add_argument(
-        "-itr", "--iterations", type=int, required=False, default=20, help="number of iterations for the Chinese Whispers algorithm")
-
-    args = vars(parser.parse_args())
-
-    #Load the embeddings
-    data = pickle.load(open("embeddings_test.pickle","rb"))
-    
-    # Draw the initial graph
-    graph = draw_graph(data,args["threshold"])
-    # Run the clustering algorithm on the graph
-    graph = chineseWhispers(graph,args["iterations"])
-    # Sort the images using the clusters
-    image_sorter(graph)
-
-
