@@ -52,7 +52,8 @@ On testing on the Labeled Faces in the Wild dataset the following results were o
 The LFW dataset has many images containing more than one face but only has a single label. This can have an effect on the evaluation metrics and the clusters formed. These factors have been discussed in detail in the notebook.
 
 For example by running the script `get_individual.py` and providing a photo of George Bush will result in some images like this.   
-In Layman terms we have gathered all the 'photobombs' of George Bush in the datset also because all the labels for the photo correspond to a different person.  
+In Layman terms we have gathered all the 'photobombs' of George Bush in the dataset, but all the labels for the 'photobombs' correspond to a different person.  
+**NOTE**: this does not effect the clustering for the original person as the scripts treat each face seperately but refer to the same image.  
   
 <img src="assets\photobomb.jpg" width=450px> 
 
