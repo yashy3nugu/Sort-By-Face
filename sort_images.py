@@ -4,22 +4,24 @@ import networkx as nx
 import os
 import shutil
 import argparse
+import sys
 
 from CW import draw_graph,chinese_whispers
 
 def image_sorter(G):
-    """copies images from the source and pastes them to a directory.
-    Each sub directory represents a pseudo class which contains images of the pseudo class assigned by
+    """Copies images from the source and pastes them to a directory.
+    Each sub directory represents a cluster which contains images of the cluster assigned by
     the clustering algorithm
 
     Args:
         graph : networkx graph on which the clustering algorithm has been done on
     """
-    root = "Sorted-pictures-test"
+    root = "Sorted-pictures"
     if not os.path.exists(root):
         os.mkdir(root)
 
     for node,attribute in G.nodes.items():
+
         # Get the image path from the node of the graph and copy it to a subdirectory with the name of the cluster
         source = attribute["source"]
         destination = os.path.join(root,attribute["cluster"])
@@ -44,7 +46,12 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     #Load the embeddings
-    data = pickle.load(open("embeddings.pickle","rb"))
+    try:
+        data = pickle.load(open("embeddings.pickle","rb"))
+        
+    except FileNotFoundError:
+        print("No saved embeddings found. Please run the script embedder.py")
+        sys.exit(1)
     
     # Draw the initial graph
     graph = draw_graph(data,args["threshold"])

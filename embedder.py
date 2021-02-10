@@ -43,7 +43,8 @@ def get_image_paths(root_dir):
 
 
 def save_embeddings(process_data):
-    """Function used by each processing pool to compute embeddings for part of a dataset
+    """Function used by each processing pool to compute embeddings for part of a dataset.
+    The embeddings are saved into a temporary folder
 
     Args:
         process_data : dictionary consisting of data to be used by the pool 
@@ -67,10 +68,12 @@ def save_embeddings(process_data):
                 output.append({"path": path, "embedding": embedding})
         else:
             output.append({"path": path, "embedding": embeddings[0]})
+
         bar.update()
 
     bar.close()
     bar.clear()
+
     # write the embeddings computed by a process into the temporary folder
     with open(process_data['temp_path'], "wb") as f:
         pickle.dump(output, f)
@@ -89,6 +92,8 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
 
+
+
     image_paths = get_image_paths(args['source'])
 
     if len(image_paths) == 0:
@@ -105,13 +110,13 @@ if __name__ == "__main__":
         print("Number of processes greater than system capacity..")
         processes = cpu_count()
         print("Defaulting to {} parallel processes..".format(processes))
-    
-    imgs_per_process = ceil(len(image_paths)/processes)
 
     # Split the images into equal sized batches for each process
     # Since we only need the embeddings for all the images the data can be split
     # into equal sized batches and each process can then independently compute the embeddings for the images.
     # The embeddings can then be concatenated after all of them are finished
+    
+    imgs_per_process = ceil(len(image_paths)/processes)
 
     split_paths = []
     for i in range(0, len(image_paths), imgs_per_process):

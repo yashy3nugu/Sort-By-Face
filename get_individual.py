@@ -28,6 +28,7 @@ def get_person(graph,user_node,destination):
     """
     user_cluster = graph.nodes[user_node]['cluster']
     user_path = graph.nodes[user_node]['source']
+
     if not os.path.exists(destination):
         os.mkdir(destination)
     
@@ -35,10 +36,11 @@ def get_person(graph,user_node,destination):
         if (attribute['cluster'] == user_cluster) and (attribute['source'] != user_path):
             try:
                 shutil.copy(attribute['source'],destination)
+            # in case user has moved photos after computing embeddings
             except FileNotFoundError:
                 pass
 
-    print("Your images have been copied to the folder {}".format(destination))
+    print("Your images have been copied to {}".format(destination))
         
 
 
@@ -68,9 +70,11 @@ if __name__ == "__main__":
         # cv2.imread() returns a NoneType object instead of throwing an error for invalid image paths
         print("Image not found, please enter valid image path")
         sys.exit(1)
+
     elif user_embedding.shape[0] > 1:
         print("Found more than one face in picture. Please give a picture with only one face..")
         sys.exit(1)
+
     elif user_embedding.shape[0] == 0:
         print("Found no faces. Please give a picture with a face..")
         sys.exit(1)
@@ -84,6 +88,7 @@ if __name__ == "__main__":
     user_node = len(data) + 1
     data.append({"path":args["source"],"embedding":user_embedding[0]})
 
+    # Run chinese whispers
     graph = draw_graph(data,args["threshold"])
     graph = chinese_whispers(graph,args["iterations"])
 

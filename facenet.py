@@ -14,7 +14,8 @@ def load_and_align(filepath):
 
     Args:
         filepath : Relative filepath to an image
-        detector_type: The dlib detector which is to be used
+
+    Returns: either None or a numpy array consisting of the RGB aligned face
     """
 
     face_detector = dlib.get_frontal_face_detector()
@@ -38,6 +39,7 @@ def load_and_align(filepath):
     # Discard any low resolution images
     if height < 160 or width < 160:
         return None
+
     # Resize any high resolution images while maintaining aspect ratio
     # 4k images usually take a really long time to process
     elif width > 1280 and height > 720:
@@ -47,6 +49,7 @@ def load_and_align(filepath):
     # convert images to grayscale for the detector
     gray_img = cv2.cvtColor(input_image, cv2.COLOR_RGB2GRAY)
 
+    # get all the attributes for the rectangle's of the detected faces in the image
     rectangles = face_detector(gray_img, 2)
 
     if len(rectangles) > 0:
@@ -57,7 +60,7 @@ def load_and_align(filepath):
             aligned_face = face_aligner.align(input_image, gray_img, rectangle)
             aligned_faces.append(aligned_face)
 
-        # returns numpy array of shape (1,160,160,3)
+        # returns numpy array of shape (num-faces,160,160,3)
         return np.array(aligned_faces)
 
     # If no faces are detected return None which is understood by the script calling it
@@ -86,9 +89,11 @@ def normalize_emb(emb, axis=-1, eps=1e-10):
     """L2 normalizes the embeddings from the model
 
     Args:
-        emb : numpy array of shape (1,512) containing the embedding from the model
+        emb : numpy array of shape (1,128) containing the embedding from the model
         axis : axis on which to compute L2 norm
         eps : epsilon value to prevent division by zero
+
+    Returns: numpy array consisting of 128 dimensional unit vector for the face embedding
     """
     normalized_emb = emb / np.sqrt(np.maximum(np.sum(np.square(emb), axis=axis, keepdims=True), eps))
     return normalized_emb
@@ -98,7 +103,7 @@ def compute_embedding(img_path, model):
     """Computes the embedding(s) for the face(s) in the image at the given path
 
         NOTE: The model is not loaded in this function to prevent reading the *.h5 file
-        to load the model everytime this function is called
+        to load the model everytime this function is called to compute an embedding for an image
 
     Args:
         img_path : relative path to the image
@@ -107,9 +112,10 @@ def compute_embedding(img_path, model):
     Returns:
         embeddings: numpy array of shape (number of detected faces,dimension of embedding) containing the embeddings for the detected faces
     """
-    # can be a single image or a batch of images depending on number of faces detected in the image
+    # can be a single image or a batch of images or None depending on number of faces detected in the image
     images = load_and_align(img_path)
 
+    # It is safely interpreted by the calling function
     if images is None:
         return None
 
