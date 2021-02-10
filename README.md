@@ -42,10 +42,19 @@ All the facenet models are trained using a loss called triplet loss. This loss e
 The models are trained on a huge amount of images out of which triplets are generated.
 
 # Evaluation of clustering algorithm.
-On testing on the Labeled Faces in the Wild dataset the following results were obtained. (threshold = 0.65, iterations=30)
-- **Precision**: 0.85
+The notebook 
+On testing on the Labeled Faces in the Wild dataset the following results were obtained. (threshold = 0.67, iterations=30)
+- **Precision**: 0.89
 - **Recall**: 0.99
-- **F-measure**: 0.92
+- **F-measure**: 0.95
+- **Clusters formed**: 6090 (5749 unique people in the dataset)
+
+The LFW dataset has many images containing more than one face but only has a single label. This can have an effect on the evaluation metrics and the clusters formed. These factors have been discussed in detail in the notebook.
+
+For example by running the script `get_individual.py` and providing a photo of George Bush will result in some images like this.   
+In Layman terms we have gathered all the 'photobombs' of George Bush in the datset also because all the labels for the photo correspond to a different person.  
+  
+<img src="assets\photobomb.jpg" width=450px> 
 
 # References
 This project is inspired by the ideas presented in the following papers
