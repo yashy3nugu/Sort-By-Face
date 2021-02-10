@@ -131,3 +131,13 @@ dmypy.json
 # Dataset
 lfw/
 testing-images
+
+# Models
+Models/
+
+# Embeddings and temporary files
+*.pickle
+temp/
+
+# Sorted pictures
+Sorted-pictures/
