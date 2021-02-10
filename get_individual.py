@@ -62,6 +62,14 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
 
+    # Load the embeddings from the corpus
+    try:
+        data = pickle.load(open("embeddings.pickle","rb"))
+
+    except FileNotFoundError:
+        print("No saved embeddings found. Please run the script embedder.py")
+        sys.exit(1)
+
     # load the user's image and compute embedding
     model = load_model("Models/facenet.h5")
     user_embedding = compute_embedding(args["source"],model)
@@ -79,8 +87,6 @@ if __name__ == "__main__":
         print("Found no faces. Please give a picture with a face..")
         sys.exit(1)
 
-    # Load the embeddings from the corpus
-    data = pickle.load(open("embeddings.pickle","rb"))
 
     # We will first assign a node to the user for the graph used in the clustering algorithm
     # After running the clustering algorithm, since we know the node the user's image's embedding is in
