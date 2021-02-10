@@ -2,6 +2,27 @@
 This is an application with which you can either sort all the pictures by faces from a corpus of photos or retrieve all your photos from the corpus  
 by submitting a picture of yours.
 
+# Instructions
+- Put the directory where the folders are located into the project folder.
+- Run `python embedder.py -src /path/to/images`. This command utilizes all the cores in the system for parallel processing.
+- In case you want to reduce the number of parallel processes, run `python embedder.py -src /path/to/images --processes number-of-processes`.
+- The above command then calculates all the embeddings for the faces in the pictures. NOTE: It takes a significant amount of time for large directories.
+- The embeddings are saved in a pickle file called `embeddings.pickle`.
+## Sort an entire corpus of photos
+- Run `python sort_images.py`. This runs the clustering algorithm with the default parameters of threshold and iterations for the clustering algorithm.
+- If you want to tweak the parameters, run `python sort_images.py -t threshold -itr num-iterations` to alter the threshold and iterations respectively.
+- Once the clustering is finished all the images are stored into a folder called `Sorted-pictures`. Each subdirectory in it corresponds to the unique person identified.
+
+## Get pictures of a single person from the corpus.
+- To get pictures of a single person you will need to provide a picture of that person. It is recommended that the picture clears the following requirements
+for better results:
+    - Image must have width and height greater than 160px.
+    - Image must consist of only one face (The program is exited when multiple faces are detected)
+    - Image must be preferably well lit and recognizable by a human.
+- Run `python get_individual.py -src /path/to/person's/image -dest /path/to/copy/images`.
+- This script also allows to tweak with the parameters with the same arguments as mentioned before.
+- Once clustering is done all the pictures are copied into the destination
+
 # How it works
 - Given a corpus of photos inside a directory this application first detects the faces in the photos and runs a Convolutional Neural Network to  
 generate 128-Dimensional embeddings. 
