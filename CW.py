@@ -7,8 +7,8 @@ import argparse
 from tqdm import tqdm
 from random import shuffle
 
-def get_distances(embeddings,current_face_emb):
-    """Returns an array containing the euclidean distances between a given face's embedding and an
+def get_similarity(embeddings,current_face_emb):
+    """Returns an array containing the cosine similarity between a given face's embedding and an
     of other face embeddings 
 
     Args:
@@ -28,7 +28,7 @@ def draw_graph(data,threshold):
 
     Args:
         data : The list of dictionaries containing the embeddings. (obtained by running the script `embedder.py` and loading the pickle file generated)
-        threshold : Minimum distance required between two face embeddings to form an edge between their respective nodes.
+        threshold : Minimum cosine similarity required between two face embeddings to form an edge between their respective nodes.
 
     Returns:
         G: the initial networkx graph required for the Chinese Whispers algorithm
@@ -59,13 +59,13 @@ def draw_graph(data,threshold):
             break
         # Get the cosine similarities for the face embedding of the current node and all the subsequent face embeddings
         # We only need to calculate for the subsequent ones because we already calculated for previous ones in earlier iterations and the edges have already been formed by the code below
-        emb_distances = get_distances(embeddings[index+1:],data[index]["embedding"])
+        similarities = get_similarity(embeddings[index+1:],data[index]["embedding"])
 
         # list all the edges for current node
         current_node_edges = []
 
         # iterate through the similarities  
-        for i,weight in enumerate(emb_distances):
+        for i,weight in enumerate(similarities):
             
             # Add an edge between the current face embedding's node and the other face embedding's node
             # if the cosine similarity is greater than the threshold
