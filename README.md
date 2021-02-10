@@ -54,8 +54,9 @@ In Layman terms we have gathered all the 'photobombs' of George Bush in the data
 <img src="assets\photobomb.jpg" width=450px> 
 
 # How it works
-- Given a corpus of photos inside a directory this application first detects the faces in the photos and runs a Convolutional Neural Network to  
-generate 128-Dimensional embeddings. 
+- Given a corpus of photos inside a directory this application first detects the faces in the photos.
+- Face alignment is then done using dlib, such that the all the eyes for the faces is at the same coordinates.
+- Then the image is passed through a Convolutional Neural Network to generate 128-Dimensional embeddings. 
 - These embeddings are then used in a graph based clustering algorithm called 'Chinese Whispers'.  
 - The clustering algorithm assigns a cluster to each individual identified by it.  
 - After the algorithm the images are copied into seperate directories corresponding to their clusters.
