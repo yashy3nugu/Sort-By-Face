@@ -31,6 +31,16 @@ generate 128-Dimensional embeddings.
 - After the algorithm the images are copied into seperate directories corresponding to their clusters.
 - For a person who wants to retrieve only his images, only the images which are in the same cluster as the picture submitted by the user is copied.
 
+## Model used for embedding extraction
+The project uses a model which was first introduced in this [paper](https://arxiv.org/abs/1503.03832). It uses a keras model converted from 
+David Sandberg's implementation in [this](https://github.com/davidsandberg/facenet) repository.  
+In particular it uses the model with the name `20170512-110547` which was converted using [this](https://github.com/nyoki-mtl/keras-facenet/blob/master/notebook/tf_to_keras.ipynb) script.
+
+![](assets\triplet-loss.png)
+
+All the facenet models are trained using a loss called triplet loss. This loss ensures that the model gives closer embeddings for same people and farther embeddings for different people.  
+The models are trained on a huge amount of images out of which triplets are generated.
+
 # Evaluation of clustering algorithm.
 On testing on the Labeled Faces in the Wild dataset the following results were obtained. (threshold = 0.65, iterations=30)
 - **Precision**: 0.85
@@ -44,4 +54,5 @@ This project is inspired by the ideas presented in the following papers
 
 [[2] ](https://www.hindawi.com/journals/cin/2019/6065056/)Chang L, Pérez-Suárez A, González-Mendoza M. Effective and Generalizable Graph-Based Clustering for Faces in the Wild.
 
-[[3] ](https://www.researchgate.net/publication/228670574_Chinese_whispers_An_efficient_graph_clustering_algorithm_and_its_application_to_natural_language_processing_problems) Biemann, Chris. (2006). Chinese whispers: An efficient graph clustering algorithm and its application to natural language processing problems. 
+[[3] ](https://www.researchgate.net/publication/228670574_Chinese_whispers_An_efficient_graph_clustering_algorithm_and_its_application_to_natural_language_processing_problems) Biemann, Chris. (2006). Chinese whispers: An efficient graph clustering algorithm and its application to natural language processing problems.  
+[[4] ](https://arxiv.org/abs/1503.03832)Florian Schroff and Dmitry Kalenichenko and James Philbin (2015). FaceNet, a Unified Embedding for Face Recognition and Clustering
