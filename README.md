@@ -16,7 +16,7 @@ If anaconda isn't installed, install it from [here](https://www.anaconda.com/pro
 
 # Instructions
 - Put the directory where the folders are located into the project folder.
-- Run `python embedder.py -src /path/to/images`. This command utilizes all the cores in the system for parallel processing.
+- Run `python embedder.py -src /path/to/images`. Any non image file extensions are safely ignored. This command utilizes all the cores in the system for parallel processing.
 - In case you want to reduce the number of parallel processes, run `python embedder.py -src /path/to/images --processes number-of-processes`.
 - The above command then calculates all the embeddings for the faces in the pictures. NOTE: It takes a significant amount of time for large directories.
 - The embeddings are saved in a pickle file called `embeddings.pickle`.
