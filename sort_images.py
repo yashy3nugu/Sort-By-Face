@@ -44,7 +44,7 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     #Load the embeddings
-    data = pickle.load(open("embeddings_test.pickle","rb"))
+    data = pickle.load(open("embeddings.pickle","rb"))
     
     # Draw the initial graph
     graph = draw_graph(data,args["threshold"])

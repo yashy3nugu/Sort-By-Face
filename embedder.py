@@ -155,7 +155,7 @@ if __name__ == "__main__":
         for dictionary in data:
             concat_embeddings.append(dictionary)
 
-    with open("embeddings_latest.pickle", "wb") as f:
+    with open("embeddings.pickle", "wb") as f:
         pickle.dump(concat_embeddings, f)
 
     shutil.rmtree("temp")
